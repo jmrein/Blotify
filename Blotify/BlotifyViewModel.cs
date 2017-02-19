@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Threading;
 using ReactiveUI;
 
@@ -12,7 +13,7 @@ namespace Blotify
 		private double currentTime;
 		private bool isPlaying;
 		private bool showDetails = true;
-		private readonly SpotifyClient spotify = new SpotifyClient();
+		private readonly SpotifyClient spotify;
 		private readonly IDisposable disposable;
 
 		public CurrentTrack CurrentTrack
@@ -44,20 +45,18 @@ namespace Blotify
 		public ReactiveCommand NextCommand { get; }
 		public ReactiveCommand ToggleDetails { get; }
 
-		public BlotifyViewModel()
+		public BlotifyViewModel(SpotifyClient spotify)
 		{
-			PlayCommand = new ReactiveCommand(spotify.CanPlay);
-			PreviousCommand = new ReactiveCommand(spotify.CanPrevious);
-			NextCommand = new ReactiveCommand(spotify.CanSkip);
-			ToggleDetails = new ReactiveCommand(Observable.Return(true));
+			this.spotify = spotify;
+			PlayCommand = ReactiveCommand.Create(PlayPause, spotify.CanPlay);
+			PreviousCommand = ReactiveCommand.Create(spotify.Previous, spotify.CanPrevious);
+			NextCommand = ReactiveCommand.Create(spotify.Next, spotify.CanSkip);
+			ToggleDetails = ReactiveCommand.Create(() => ShowDetails = !ShowDetails, Observable.Return(true));
 			disposable = new CompositeDisposable(
 				spotify.TrackChanged.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(track => CurrentTrack = new CurrentTrack(track)),
 				spotify.TimeChanged.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(time => CurrentTime = time),
 				spotify.IsPlaying.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(v => IsPlaying = v),
-				PlayCommand.Subscribe(_ => PlayPause()),
-				PreviousCommand.Subscribe(_ => spotify.Previous()),
-				NextCommand.Subscribe(_ => spotify.Next()),
-				ToggleDetails.Subscribe(_ => ShowDetails = !ShowDetails),
+				PlayCommand, PreviousCommand, NextCommand, ToggleDetails,
 				spotify, PlayCommand, PreviousCommand, NextCommand);
 			spotify.Connect();
 		}

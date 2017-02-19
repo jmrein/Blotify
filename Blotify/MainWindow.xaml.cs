@@ -9,7 +9,6 @@ namespace Blotify
 	{
 		public MainWindow()
 		{
-			DataContext = new BlotifyViewModel();
 			InitializeComponent();
 		}
 

@@ -1,63 +1,99 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using SpotifyAPI.Local;
 using SpotifyAPI.Local.Models;
 
 namespace Blotify
 {
-	internal class SpotifyClient : IDisposable
+	public class SpotifyClient : IDisposable
 	{
+		private readonly CompositeDisposable waitForPlayableDisposable = new CompositeDisposable();
 		private readonly SpotifyLocalAPI api = new SpotifyLocalAPI();
-		private readonly ISubject<Track> trackChanged = new ReplaySubject<Track>();
-		private readonly ISubject<double> timeChanged = new ReplaySubject<double>();
-		private readonly ISubject<bool> isPlaying = new BehaviorSubject<bool>(false);
-		private readonly ISubject<bool> canPlay = new BehaviorSubject<bool>(false);
-		private readonly ISubject<bool> canSkip = new BehaviorSubject<bool>(false);
-		private readonly ISubject<bool> canPrevious = new BehaviorSubject<bool>(false); 
+		private readonly Subject<Unit> updateRequested = new Subject<Unit>();
+
+		public SpotifyClient()
+		{
+			var stateChange = Observable.FromEventPattern<PlayStateEventArgs>(h => api.OnPlayStateChange += h, h => api.OnPlayStateChange -= h)
+				.Select(s => Unit.Default)
+				.Merge(updateRequested)
+				.Select(playing => api.GetStatus());
+			TrackChanged = Observable.FromEventPattern<TrackChangeEventArgs>(h => api.OnTrackChange += h, h => api.OnTrackChange -= h)
+				.Select(t => t.EventArgs.NewTrack)
+				.Merge(stateChange.Select(p => p.Track));
+			TimeChanged = Observable.FromEventPattern<TrackTimeChangeEventArgs>(h => api.OnTrackTimeChange += h, h => api.OnTrackTimeChange -= h)
+				.Select(t => t.EventArgs.TrackTime);
+			IsPlaying = stateChange.Select(s => s.Playing);
+			CanPlay = stateChange.Select(s => s.PlayEnabled);
+			CanSkip = stateChange.Select(s => s.NextEnabled);
+			CanPrevious = stateChange.Select(s => s.PrevEnabled);
+		}
 
 		public void Connect()
 		{
-			if (!SpotifyLocalAPI.IsSpotifyRunning())
-			{
-				throw new Exception("Spotify is not running!");
-			}
-			if (!SpotifyLocalAPI.IsSpotifyWebHelperRunning())
-			{
-				throw new Exception("SpotifyWebHelper is not running!");
-			}
-			if (!api.Connect())
-			{
-				throw new Exception("Could not connect to Spotify!");
-			}
+			Start(SpotifyLocalAPI.IsSpotifyRunning, SpotifyLocalAPI.RunSpotify, "Spotify is not running!");
+			Start(SpotifyLocalAPI.IsSpotifyWebHelperRunning, SpotifyLocalAPI.RunSpotifyWebHelper, "Web helper is not running!");
+			Start(api.Connect, null, "Could not connect.");
 			api.ListenForEvents = true;
-			UpdateStatus(api.GetStatus());
-			api.OnTrackChange += (o, e) => trackChanged.OnNext(e.NewTrack);
-			api.OnTrackTimeChange += (o, e) => timeChanged.OnNext(e.TrackTime);
-			api.OnPlayStateChange += (o, e) => UpdateStatus(api.GetStatus());
+			WaitForPlay();
+			updateRequested.OnNext(Unit.Default);
 		}
 
-		public IObservable<Track> TrackChanged => trackChanged;
-		public IObservable<double> TimeChanged => timeChanged;
-		public IObservable<bool> IsPlaying => isPlaying;
-		public IObservable<bool> CanPlay => canPlay;
-		public IObservable<bool> CanSkip => canSkip;
-		public IObservable<bool> CanPrevious => canPrevious;
+		/// <summary>
+		/// Right after Spotify has launched, properties like CanPlay will be disabled.
+		/// Give it a few tries to sort itself out.
+		/// It may also be disabled for reasons, in which case, give up after a bit.
+		/// </summary>
+		private void WaitForPlay()
+		{
+			waitForPlayableDisposable.Add(CanPlay.Where(canPlay => canPlay).Subscribe(canPlay =>
+			{
+				waitForPlayableDisposable.Dispose();
+			}));
+			waitForPlayableDisposable.Add(Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(500)).Subscribe(i =>
+			{
+				updateRequested.OnNext(Unit.Default);
+				if (i > 3)
+				{
+					waitForPlayableDisposable.Dispose();
+				}
+			}));
+		}
+
+		private static void Start(Func<bool> isRunning, Action starter, string errorMessage)
+		{
+			if (isRunning())
+			{
+				return;
+			}
+			starter?.Invoke();
+			if (!isRunning())
+			{
+				throw new Exception(errorMessage);
+			}
+		}
+
+		public IObservable<Track> TrackChanged { get; }
+		public IObservable<double> TimeChanged { get; }
+		public IObservable<bool> IsPlaying { get; }
+		public IObservable<bool> CanPlay { get; }
+		public IObservable<bool> CanSkip { get; }
+		public IObservable<bool> CanPrevious { get; }
 
 		public void Dispose()
 		{
-			api.Dispose();
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
-		private void UpdateStatus(StatusResponse status)
+		protected virtual void Dispose(bool disposing)
 		{
-			isPlaying.OnNext(status.Playing);
-			canPlay.OnNext(status.PlayEnabled);
-			canPrevious.OnNext(status.PrevEnabled);
-			canSkip.OnNext(status.NextEnabled);
-			if (status.Playing)
+			if (disposing)
 			{
-				trackChanged.OnNext(status.Track);
-				timeChanged.OnNext(status.PlayingPosition);
+				waitForPlayableDisposable.Dispose();
+				api.Dispose();
 			}
 		}
 
@@ -68,12 +104,12 @@ namespace Blotify
 
 		public async void Play()
 		{
-			await api.Play();
+			await api.Play().ContinueWith(_ => updateRequested.OnNext(Unit.Default));
 		}
 
 		public async void Pause()
 		{
-			await api.Pause();
+			await api.Pause().ContinueWith(_ => updateRequested.OnNext(Unit.Default));
 		}
 
 		public void Next()
