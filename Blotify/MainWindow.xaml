@@ -6,9 +6,8 @@
         xmlns:blotify="clr-namespace:Blotify"
         xmlns:models="clr-namespace:SpotifyAPI.Local.Models;assembly=SpotifyAPI"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance blotify:BlotifyViewModel}"
-        Background="#282828"
-        WindowStyle="None" ShowInTaskbar="False" Topmost="True" SizeToContent="Height" Width="200" ResizeMode="NoResize" 
-        MouseDown="MainWindow_OnMouseDown">
+        WindowStyle="None" Topmost="True" SizeToContent="Height" Width="200" ResizeMode="NoResize" 
+        MouseDown="MainWindow_OnMouseDown" Title="Blotify">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,6 +23,11 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="{StaticResource ThemeDark}"/>
+        </Style>
+    </Window.Style>
     <DockPanel>
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
@@ -33,9 +37,12 @@
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" Command="{Binding PreviousCommand}" Template="{StaticResource PreviousButton}"/>
-            <Button Grid.Column="2" Command="{Binding PlayCommand}" Template="{StaticResource PlayPauseButton}"/>
-            <Button Grid.Column="3" Command="{Binding NextCommand}" Template="{StaticResource NextButton}"/>
+            <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                <Button Click="Info_Click" Template="{StaticResource InformationButton}"/>
+            </StackPanel>
+            <Button Grid.Column="1" Command="{Binding PreviousCommand}" Style="{StaticResource PreviousButton}"/>
+            <Button Grid.Column="2" Command="{Binding PlayCommand}" Style="{StaticResource PlayPauseButton}"/>
+            <Button Grid.Column="3" Command="{Binding NextCommand}" Style="{StaticResource NextButton}"/>
             <DockPanel Grid.Column="4" HorizontalAlignment="Right">
                 <Button DockPanel.Dock="Top" Click="Exit_OnClick" Template="{StaticResource CloseButton}" />
                 <Button DockPanel.Dock="Bottom" Command="{Binding ToggleDetails}" Template="{StaticResource CollapseChevron}" />
@@ -45,8 +52,8 @@
             <Image Source="{Binding CurrentTrack.AlbumArt}" DockPanel.Dock="Left" Width="50" Height="50"/>
             <StackPanel Orientation="Vertical">
                 <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Song}" Foreground="White"/>
-                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Artist}" Foreground="#a0a0a0"/>
-                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Album}" Foreground="#a0a0a0"/>
+                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Artist}" Foreground="{StaticResource ThemeLight}"/>
+                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Album}" Foreground="{StaticResource ThemeLight}"/>
             </StackPanel>
         </DockPanel>
     </DockPanel>

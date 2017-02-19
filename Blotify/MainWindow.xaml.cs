@@ -29,5 +29,10 @@ namespace Blotify
 		{
 			Application.Current.Shutdown();
 		}
+
+		private void Info_Click(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://github.com/jmrein/Blotify");
+		}
 	}
 }

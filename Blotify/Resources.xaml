@@ -4,96 +4,135 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:blotify="clr-namespace:Blotify"
                     mc:Ignorable="d">
-
-    <ControlTemplate TargetType="Button" x:Key="PreviousButton">
-        <Grid>
-            <Ellipse Width="32" Height="32" Cursor="Hand">
-                <Ellipse.Fill>
-                    <DrawingBrush><!--PreviousFrame-->
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M2.248,8.0723L11,13.8853 11,13.0003 14,13.0003 14,3.0003 11,3.0003 11,2.1343z" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M10,12L3.794,8.063 10,4z" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M12,12L13,12 13,4 12,4z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Ellipse.Fill>
-                </Ellipse>
-            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
-    </ControlTemplate>
-    <ControlTemplate TargetType="Button" x:Key="NextButton">
-        <Grid>
-            <Ellipse Width="32" Height="32" Cursor="Hand">
-                <Ellipse.Fill>
-                    <DrawingBrush><!--NextFrameArrow-->
-                        <DrawingBrush.Drawing>
-                            <DrawingGroup>
-                                <DrawingGroup.Children>
-                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M14.752,7.9492L6,2.1352 6,3.0002 3,3.0002 3,13.0002 6,13.0002 6,13.8872z" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M7,4L12.958,7.958 7,12z" />
-                                    <GeometryDrawing Brush="#FF414141" Geometry="F1M4,12L5.001,12 5.001,4 4,4z" />
-                                </DrawingGroup.Children>
-                            </DrawingGroup>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Ellipse.Fill>
-            </Ellipse>
-            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
-    </ControlTemplate>
-    <ControlTemplate TargetType="Button" x:Key="PlayPauseButton">
-        <Grid d:DataContext="{d:DesignInstance blotify:BlotifyViewModel}">
-            <Ellipse Width="48" Height="48" Cursor="Hand">
-                <Ellipse.Style>
-                    <Style TargetType="Ellipse">
-                        <Setter Property="Fill">
-                            <Setter.Value>
+    <SolidColorBrush Color="#282828" x:Key="ThemeDark"/>
+    <SolidColorBrush Color="#a0a0a0" x:Key="ThemeLight"/>
+    <Style TargetType="Button"  x:Key="PreviousButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Ellipse Width="32" Height="32" Cursor="Hand">
+                            <Ellipse.Fill>
                                 <DrawingBrush>
+                                    <!--PreviousFrame-->
                                     <DrawingBrush.Drawing>
                                         <DrawingGroup>
                                             <DrawingGroup.Children>
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
-                                                <GeometryDrawing Brush="#FF329932" Geometry="F1M6,12L6,4 12,8z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
-                                                <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M6,4L12,8 6,12z" />
+                                                <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M2.248,8.0723L11,13.8853 11,13.0003 14,13.0003 14,3.0003 11,3.0003 11,2.1343z"/>
+                                                <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M10,12L3.794,8.063 10,4z" />
+                                                <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M12,12L13,12 13,4 12,4z" />
                                             </DrawingGroup.Children>
                                         </DrawingGroup>
                                     </DrawingBrush.Drawing>
                                 </DrawingBrush>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
-                                <DataTrigger.Setters>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="White"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource ThemeLight}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Button"  x:Key="NextButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Ellipse Width="32" Height="32" Cursor="Hand">
+                            <Ellipse.Fill>
+                                <DrawingBrush>
+                                    <!--NextFrameArrow-->
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup>
+                                            <DrawingGroup.Children>
+                                                <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M14.752,7.9492L6,2.1352 6,3.0002 3,3.0002 3,13.0002 6,13.0002 6,13.8872z" />
+                                                <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M7,4L12.958,7.958 7,12z" />
+                                                <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M4,12L5.001,12 5.001,4 4,4z" />
+                                            </DrawingGroup.Children>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="White"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource ThemeLight}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Button"  x:Key="PlayPauseButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid d:DataContext="{d:DesignInstance blotify:BlotifyViewModel}">
+                        <Ellipse Width="48" Height="48" Cursor="Hand">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
                                     <Setter Property="Fill">
                                         <Setter.Value>
                                             <DrawingBrush>
                                                 <DrawingBrush.Drawing>
                                                     <DrawingGroup>
                                                         <DrawingGroup.Children>
-                                                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
-                                                            <GeometryDrawing Brush="#FF1BA1E2" Geometry="F1M11,11L9,11 9,5 11,5z M7,11L5,11 5,5 7,5z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
-                                                            <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M11,5L9,5 9,11 11,11z M7,11L5,11 5,5 7,5z" />
+                                                            <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
+                                                            <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M6,12L6,4 12,8z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                                                            <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M6,4L12,8 6,12z" />
                                                         </DrawingGroup.Children>
                                                     </DrawingGroup>
                                                 </DrawingBrush.Drawing>
                                             </DrawingBrush>
                                         </Setter.Value>
                                     </Setter>
-                                </DataTrigger.Setters>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Ellipse.Style>
-            </Ellipse>
-        </Grid>
-    </ControlTemplate>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Fill">
+                                                    <Setter.Value>
+                                                        <DrawingBrush>
+                                                            <DrawingBrush.Drawing>
+                                                                <DrawingGroup>
+                                                                    <DrawingGroup.Children>
+                                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                                        <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
+                                                                        <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M11,11L9,11 9,5 11,5z M7,11L5,11 5,5 7,5z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                                                                        <GeometryDrawing Brush="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Geometry="F1M11,5L9,5 9,11 11,11z M7,11L5,11 5,5 7,5z" />
+                                                                    </DrawingGroup.Children>
+                                                                </DrawingGroup>
+                                                            </DrawingBrush.Drawing>
+                                                        </DrawingBrush>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="White"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource ThemeLight}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <ControlTemplate TargetType="Button" x:Key="CloseButton">
         <Grid>
             <Ellipse Width="20" Height="20" Cursor="Hand">
@@ -127,8 +166,8 @@
                                         <DrawingGroup>
                                             <DrawingGroup.Children>
                                                 <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.9819,11.1729L2.9999,6.1859 5.3119,3.8719 8.0409,6.6049 11.0059,3.9049 13.3129,6.2109z" />
-                                                <GeometryDrawing Brush="#FF424242" Geometry="F1M5.3115,5.2871L4.4135,6.1851 8.0075,9.7831 11.8725,6.1851 10.9745,5.2871 8.0075,7.9861z" />
+                                                <GeometryDrawing Brush="White" Geometry="F1M7.9819,11.1729L2.9999,6.1859 5.3119,3.8719 8.0409,6.6049 11.0059,3.9049 13.3129,6.2109z" />
+                                                <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M5.3115,5.2871L4.4135,6.1851 8.0075,9.7831 11.8725,6.1851 10.9745,5.2871 8.0075,7.9861z" />
                                             </DrawingGroup.Children>
                                         </DrawingGroup>
                                     </DrawingBrush.Drawing>
@@ -145,8 +184,8 @@
                                                     <DrawingGroup>
                                                         <DrawingGroup.Children>
                                                             <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                                                            <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M8.3306,3.8721L13.3126,8.8591 11.0006,11.1731 8.2716,8.4401 5.3066,11.1401 2.9996,8.8341z" />
-                                                            <GeometryDrawing Brush="#FF656565" Geometry="F1M11.001,9.7579L11.899,8.8599 8.305,5.2619 4.44,8.8599 5.338,9.7579 8.305,7.0589z" />
+                                                            <GeometryDrawing Brush="White" Geometry="F1M8.3306,3.8721L13.3126,8.8591 11.0006,11.1731 8.2716,8.4401 5.3066,11.1401 2.9996,8.8341z" />
+                                                            <GeometryDrawing Brush="{StaticResource ThemeDark}" Geometry="F1M11.001,9.7579L11.899,8.8599 8.305,5.2619 4.44,8.8599 5.338,9.7579 8.305,7.0589z" />
                                                         </DrawingGroup.Children>
                                                     </DrawingGroup>
                                                 </DrawingBrush.Drawing>
@@ -158,6 +197,27 @@
                         </Style.Triggers>
                     </Style>
                 </Ellipse.Style>
+            </Ellipse>
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+    </ControlTemplate>
+    <ControlTemplate TargetType="Button" x:Key="InformationButton">
+        <Grid>
+            <Ellipse Width="16" Height="16" Cursor="Hand">
+                <Ellipse.Fill>
+                    <DrawingBrush>
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.Children>
+                                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                    <GeometryDrawing Brush="#00F6F6F6" Geometry="F1M0,8.0005C0,3.5825 3.582,0.000499999999998835 8,0.000499999999998835 12.418,0.000499999999998835 16,3.5825 16,8.0005 16,12.4185 12.418,16.0005 8,16.0005 3.582,16.0005 0,12.4185 0,8.0005" />
+                                    <GeometryDrawing Brush="#FF1AA1E2" Geometry="F1M9,5L7,5 7,3 9,3z M9,13L7,13 7,6 9,6z M8,1C4.135,1 1,4.135 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.135 11.865,1 8,1" />
+                                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M7,5L9,5 9,3 7,3z M7,6L9,6 9,13 7,13z" />
+                                </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Ellipse.Fill>
             </Ellipse>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
