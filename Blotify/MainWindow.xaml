@@ -1,0 +1,53 @@
+﻿<Window x:Class="Blotify.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:blotify="clr-namespace:Blotify"
+        xmlns:models="clr-namespace:SpotifyAPI.Local.Models;assembly=SpotifyAPI"
+        mc:Ignorable="d" d:DataContext="{d:DesignInstance blotify:BlotifyViewModel}"
+        Background="#282828"
+        WindowStyle="None" ShowInTaskbar="False" Topmost="True" SizeToContent="Height" Width="200" ResizeMode="NoResize" 
+        MouseDown="MainWindow_OnMouseDown">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="ResourceLink" DataType="models:SpotifyResource">
+                <TextBlock Margin="4 0 0 0">
+                    <Hyperlink NavigateUri="{Binding Location.Og}" RequestNavigate="Hyperlink_OnRequestNavigate" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ContentControl}}" TextDecorations="{x:Null}">
+                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                    </Hyperlink>
+                </TextBlock>
+            </DataTemplate>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" Command="{Binding PreviousCommand}" Template="{StaticResource PreviousButton}"/>
+            <Button Grid.Column="2" Command="{Binding PlayCommand}" Template="{StaticResource PlayPauseButton}"/>
+            <Button Grid.Column="3" Command="{Binding NextCommand}" Template="{StaticResource NextButton}"/>
+            <DockPanel Grid.Column="4" HorizontalAlignment="Right">
+                <Button DockPanel.Dock="Top" Click="Exit_OnClick" Template="{StaticResource CloseButton}" />
+                <Button DockPanel.Dock="Bottom" Command="{Binding ToggleDetails}" Template="{StaticResource CollapseChevron}" />
+            </DockPanel>
+        </Grid>
+        <DockPanel Visibility="{Binding ShowDetails, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Image Source="{Binding CurrentTrack.AlbumArt}" DockPanel.Dock="Left" Width="50" Height="50"/>
+            <StackPanel Orientation="Vertical">
+                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Song}" Foreground="White"/>
+                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Artist}" Foreground="#a0a0a0"/>
+                <ContentControl ContentTemplate="{StaticResource ResourceLink}" Content="{Binding Path=CurrentTrack.Album}" Foreground="#a0a0a0"/>
+            </StackPanel>
+        </DockPanel>
+    </DockPanel>
+</Window>
