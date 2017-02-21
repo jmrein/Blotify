@@ -53,7 +53,7 @@ namespace Blotify
 			NextCommand = ReactiveCommand.Create(spotify.Next, spotify.CanSkip);
 			ToggleDetails = ReactiveCommand.Create(() => ShowDetails = !ShowDetails, Observable.Return(true));
 			disposable = new CompositeDisposable(
-				spotify.TrackChanged.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(track => CurrentTrack = new CurrentTrack(track)),
+				spotify.TrackChanged.ObserveOn(Dispatcher.CurrentDispatcher).Where(track => track != null).Subscribe(track => CurrentTrack = new CurrentTrack(track)),
 				spotify.TimeChanged.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(time => CurrentTime = time),
 				spotify.IsPlaying.ObserveOn(Dispatcher.CurrentDispatcher).Subscribe(v => IsPlaying = v),
 				PlayCommand, PreviousCommand, NextCommand, ToggleDetails,
