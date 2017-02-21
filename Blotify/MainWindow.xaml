@@ -6,7 +6,7 @@
         xmlns:blotify="clr-namespace:Blotify"
         xmlns:models="clr-namespace:SpotifyAPI.Local.Models;assembly=SpotifyAPI"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance blotify:BlotifyViewModel}"
-        WindowStyle="None" Topmost="True" SizeToContent="Height" Width="200" ResizeMode="NoResize" 
+        WindowStyle="None" Topmost="True" SizeToContent="Height" Width="200" ResizeMode="NoResize" ShowInTaskbar="False"
         MouseDown="MainWindow_OnMouseDown" Title="Blotify">
     <Window.Resources>
         <ResourceDictionary>
